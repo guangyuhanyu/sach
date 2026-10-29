@@ -727,7 +727,7 @@ function render(){
   if(pc&&pc.c){cx.imageSmoothingEnabled=true;cx.imageSmoothingQuality='high';cx.drawImage(pc.c,V.ox,V.oy,pw,ph);}
   else{cx.fillStyle='#b0a690';cx.font='15px -apple-system,sans-serif';cx.textAlign='center';cx.fillText('Đang tải trang…',V.ox+pw/2,V.oy+Math.min(ph/2,Hh/2));cx.textAlign='start';}
   cx.setTransform(dpr*V.s,0,0,dpr*V.s,dpr*V.ox,dpr*V.oy);
-  if(!S.hideNotes){drawMasks(cx,curObjs(),mv);drawAll(cx,curObjs(),mv);}
+  if(!S.hideNotes){drawAll(cx,curObjs(),mv);drawMasks(cx,curObjs(),mv);}
   drawSpot();
   if(sel.size&&!tmpObjs){const b=selBox();if(b){const d=mv||{dx:0,dy:0},m=px(6),hs=px(14);cx.save();cx.strokeStyle='#b7312c';cx.setLineDash([px(6),px(4)]);cx.lineWidth=px(1.2);
     cx.strokeRect(b.x-m+d.dx,b.y-m+d.dy,b.w+2*m,b.h+2*m);cx.setLineDash([]);cx.fillStyle='#fff';cx.fillRect(b.x+b.w+m-hs/2+d.dx,b.y+b.h+m-hs/2+d.dy,hs,hs);cx.strokeRect(b.x+b.w+m-hs/2+d.dx,b.y+b.h+m-hs/2+d.dy,hs,hs);cx.restore();}}
@@ -937,7 +937,7 @@ function cropCopy(r){
   x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
   if(pc&&pc.c){const f=pc.c.width/1000;const x1=Math.max(0,r.x),y1=Math.max(0,r.y),x2=Math.min(1000,r.x+r.w),y2=Math.min(PH,r.y+r.h);
     if(x2>x1&&y2>y1){const sw=Math.min(pc.c.width-x1*f,(x2-x1)*f),sh=Math.min(pc.c.height-y1*f,(y2-y1)*f);x.drawImage(pc.c,x1*f,y1*f,sw,sh,(x1-r.x)*k,(y1-r.y)*k,(x2-x1)*k,(y2-y1)*k);}}
-  x.setTransform(k,0,0,k,-r.x*k,-r.y*k);drawWM(x);if(!S.hideNotes)drawAll(x,page().objs);
+  x.setTransform(k,0,0,k,-r.x*k,-r.y*k);drawWM(x);if(!S.hideNotes){drawAll(x,page().objs);drawMasks(x,page().objs);}
   const blobP=new Promise(res=>c.toBlob(res,'image/png'));
   const fallback=()=>{blobP.then(b=>{if(b)dl(b,`${safeName(BK.title)}-trang${P}-cat.png`);});toast('Safari không cho sao chép – đã tải ảnh xuống, kéo ảnh vào bảng trắng');};
   try{if(navigator.clipboard&&window.ClipboardItem){navigator.clipboard.write([new ClipboardItem({'image/png':blobP})]).then(()=>toast('Đã sao chép ✂ – sang Bảng trắng bấm ⌘V để dán'),fallback);}else fallback();}catch(e){fallback();}
@@ -1039,7 +1039,7 @@ async function exportPNG(){
   if(!BK)return;toast('Đang tạo ảnh…');
   await renderPdf(P,Math.min(maxW(),2000));const pc=PC.get(P);if(!pc||!pc.c)return;
   const c=document.createElement('canvas');c.width=pc.c.width;c.height=pc.c.height;const x=c.getContext('2d');x.drawImage(pc.c,0,0);
-  const k=c.width/1000;x.setTransform(k,0,0,k,0,0);drawWM(x);if(!S.hideNotes)drawAll(x,page().objs);
+  const k=c.width/1000;x.setTransform(k,0,0,k,0,0);drawWM(x);if(!S.hideNotes){drawAll(x,page().objs);drawMasks(x,page().objs);}
   c.toBlob(b=>dl(b,`${safeName(BK.title)}-trang${P}.png`),'image/png');
 }
 async function exportJSON(){try{const notes=await DB.all('notes');const meta=await DB.all('meta');const d=new Date();
