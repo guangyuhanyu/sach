@@ -1078,7 +1078,7 @@ function addImageFile(file,x,y){
     commit(page().objs.concat([o]));setTool('sel');sel.clear();sel.add(o.id);render();toast('Đã dán ảnh – kéo để di chuyển, kéo góc để đổi cỡ');
   };im.src=fr.result;};fr.readAsDataURL(file);
 }
-document.addEventListener('paste',e=>{if(editing||!BK||isLib())return;const items=(e.clipboardData||{}).items||[];for(const it of items){if(it.type&&it.type.indexOf('image')===0){e.preventDefault();addImageFile(it.getAsFile());return;}}
+document.addEventListener('paste',e=>{if(editing||!BK||isLib()||(e.target&&e.target.closest&&e.target.closest('input,textarea,[contenteditable="true"],#audmodal,#help')))return;const items=(e.clipboardData||{}).items||[];for(const it of items){if(it.type&&it.type.indexOf('image')===0){e.preventDefault();addImageFile(it.getAsFile());return;}}
   const t=e.clipboardData&&e.clipboardData.getData('text/plain');if(t&&t.trim()){e.preventDefault();const z=SIZES.tx[S.si.tx]/V.s,cc=centerU();const o={t:'x',id:uid(),x:cc.x-t.length*z/4,y:cc.y-z,s:t.trim(),z,c:PENS[S.pen][0],f:S.font,py:null};commit(page().objs.concat([o]));}});
 let dragN=0;
 document.addEventListener('dragenter',e=>{dragN++;$('#drophint').classList.add('show');});
