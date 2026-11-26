@@ -110,6 +110,17 @@ body.dark #saved{color:#9fb3b8}
 body.dark #draftb{opacity:.95}
 body.dark #thumbs{background:rgba(38,52,58,.97);border-color:#3b4d54}
 body.dark .th{color:#9fb3b8}
+#pdfmodal{position:fixed;inset:0;z-index:45;background:rgba(40,30,20,.35);display:none;align-items:center;justify-content:center}
+#pdfmodal.show{display:flex}
+#pdfbox{background:#FDFBF6;border-radius:14px;width:min(480px,94vw);padding:18px 20px;box-shadow:0 20px 60px rgba(0,0,0,.25);color:#425961;font-size:14px}
+#pdfbox h3{margin:0 0 2px;color:#5E1F0B;font-family:Lora,serif;font-size:18px}
+#pdfbox p{margin:0 0 12px;color:#5D6F73;font-size:12.5px}
+#pdfbox .pr{display:flex;align-items:center;gap:8px;padding:7px 4px;border-radius:8px;cursor:pointer}
+#pdfbox .pr:hover{background:#F3EFE4}
+#pdfbox #prange{border:1px solid #D6C997;border-radius:7px;padding:4px 8px;font:inherit;width:150px;background:#fff}
+#pdfbox .popt{display:flex;flex-direction:column;gap:6px;margin:12px 4px 4px;padding-top:10px;border-top:1px solid #EBE6D0;font-size:13px}
+#pdfbox .row{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+#pdfbox input[type=radio],#pdfbox input[type=checkbox]{accent-color:#CF3D2F}
 #bkrem{position:fixed;left:50%;top:16px;transform:translateX(-50%);z-index:35;display:none;align-items:center;gap:10px;background:#FDFBF6;border:1px solid #D6C997;border-left:4px solid #CF3D2F;border-radius:12px;padding:10px 12px 10px 14px;box-shadow:0 8px 24px rgba(40,50,55,.18);font-size:13.5px;color:#425961;max-width:92vw}
 #bkrem.show{display:flex}
 #bkrem .btn{padding:6px 12px;font-size:13px}
@@ -241,7 +252,7 @@ body.dark .th{color:#9fb3b8}
 <div id="help"><div id="hp"></div></div>
 <div id="loading"><div class="spin"></div><div id="ltext">Đang mở sách…</div></div>
 <div id="drophint">Thả file PDF hoặc ảnh vào đây</div>
-<div id="bkrem"><span>🗂 Đã hơn 7 ngày Thầy chưa sao lưu ghi chú (đánh dấu bài, audio, tấm che…).</span><button class="btn red" id="bkyes">Sao lưu ngay</button><button class="btn" id="bkno">Để mai</button></div><div id="edgehint"></div><div id="szpop"></div><div id="stkpop"></div><div id="vmenu"></div><div id="marks"></div><div id="player"></div><div id="audmodal"><div id="audbox"></div></div><div id="draftb">留 ĐANG GIỮ LẠI · ghi chú mới được lưu vào sách</div><div id="toast"></div>
+<div id="pdfmodal"><div id="pdfbox"></div></div><div id="bkrem"><span>🗂 Đã hơn 7 ngày Thầy chưa sao lưu ghi chú (đánh dấu bài, audio, tấm che…).</span><button class="btn red" id="bkyes">Sao lưu ngay</button><button class="btn" id="bkno">Để mai</button></div><div id="edgehint"></div><div id="szpop"></div><div id="stkpop"></div><div id="vmenu"></div><div id="marks"></div><div id="player"></div><div id="audmodal"><div id="audbox"></div></div><div id="draftb">留 ĐANG GIỮ LẠI · ghi chú mới được lưu vào sách</div><div id="toast"></div>
 <input type="file" id="fdir" webkitdirectory directory multiple style="display:none">
 <input type="file" id="fpdf" accept="application/pdf,.pdf" multiple style="display:none">
 <input type="file" id="fimp" accept=".json,application/json" style="display:none">
@@ -933,11 +944,11 @@ function toggleVMenu(force){const box=$('#vmenu');const on=force!=null?force:!bo
   const it=(a,ic,t,k,on2)=>`<button class="vi${on2?' on':''}" data-v="${a}"><b>${ic}</b><span>${t}</span><kbd>${k}</kbd></button>`;
   box.innerHTML=it('fitp','⊡','Xem vừa cả trang','0',V.fit==='page')+it('fitw','↔','Xem vừa chiều ngang','W',V.fit==='width')+it('thumbs','▤','Thanh xem trước các trang','M',S.thumbs)+
     it('marks','🔖','Đánh dấu bài','I')+it('notes',S.hideNotes?'◌':'◉',S.hideNotes?'Hiện ghi chú':'Ẩn ghi chú','N',S.hideNotes)+it('masks','▭','Mở / che tất cả tấm che','⇧U')+
-    it('wm','印','Logo góc màn hình: '+(S.wm==='off'?'đang tắt':'đang bật'),'–')+it('font',FN(S.font)[0],'Font chữ Hán: '+FN(S.font)[2]+' (đổi 楷 ↔ 圆)','K')+it('theme',S.theme==='dark'?'☀':'☾',S.theme==='dark'?'Chuyển nền sáng':'Chuyển nền tối','⇧L')+it('lib','📚','Thư viện sách','O');
+    it('wm','印','Logo góc màn hình: '+(S.wm==='off'?'đang tắt':'đang bật'),'–')+it('font',FN(S.font)[0],'Font chữ Hán: '+FN(S.font)[2]+' (đổi 楷 ↔ 圆)','K')+it('theme',S.theme==='dark'?'☀':'☾',S.theme==='dark'?'Chuyển nền sáng':'Chuyển nền tối','⇧L')+it('pdf','📄','Lưu nhiều trang thành PDF','⌘P')+it('lib','📚','Thư viện sách','O');
   const bt=bar.querySelector('[data-a="vmenu"]').getBoundingClientRect();box.classList.add('show');box.style.top=(bt.bottom+8)+'px';box.style.left=Math.max(8,Math.min(innerWidth-box.offsetWidth-8,bt.left+bt.width/2-box.offsetWidth/2))+'px';}
 $('#vmenu').addEventListener('pointerdown',e=>e.preventDefault());
 $('#vmenu').addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(!b)return;const v=b.dataset.v;toggleVMenu(false);
-  ({fitp:()=>fitView('page'),fitw:()=>fitView('width'),thumbs:toggleThumbs,marks:()=>toggleMarks(true),notes:toggleNotes,masks:toggleAllMasks,wm:cycleWM,font:cycleFont,theme:toggleTheme,lib:showLib})[v]();});
+  ({fitp:()=>fitView('page'),fitw:()=>fitView('width'),thumbs:toggleThumbs,marks:()=>toggleMarks(true),notes:toggleNotes,masks:toggleAllMasks,wm:cycleWM,font:cycleFont,theme:toggleTheme,pdf:openPdfDialog,lib:showLib})[v]();});
 document.addEventListener('pointerdown',e=>{if(!e.target.closest('#vmenu,[data-a="vmenu"]'))toggleVMenu(false);if(!e.target.closest('#marks,#pmark'))toggleMarks(false);},true);
 
 /* watermark on the book page (page units) */
@@ -1247,7 +1258,7 @@ function showHelp(on){
     [K('T'),'Gõ chữ Hán (bấm lên trang rồi gõ pinyin)'],[K('V'),'Chọn, kéo di chuyển; kéo ô góc để đổi cỡ'],
     [K('1','–','6'),'Đổi màu bút (highlight: 1–4)'],[K('[',']'),'Nhỏ / to nét, cỡ chữ'],[K('Y'),'Hiện / ẩn pinyin'],[K('K'),'Đổi font: 楷 Khải ↔ 圆 Viết tay tròn'],
     [K('Shift')+' + kéo','Kẻ đường thẳng'],[K(CMD,'Z'),'Hoàn tác'],[K('⇧',CMD,'Z'),'Làm lại'],[K(CMD,'V'),'Dán ảnh lên trang'],[K('Delete'),'Xoá đối tượng đang chọn'],
-    [K('⇧','Delete'),'Xoá hết ghi chú trang này'],[K('N'),'Ẩn / hiện ghi chú'],[K('U'),'Tấm che đáp án: kéo để che; bấm vào tấm che để lật mở / che lại'],[K('⇧','U'),'Mở / che tất cả tấm che trên trang'],[K('S'),'Đèn rọi: kéo khung vùng cần chú ý; S hoặc Esc để tắt'],[K('G'),'Mặc định nét viết TỰ XOÁ khi lật trang; bấm G để GIỮ LẠI vào sách'],[K('D'),'Dán dấu ✓ đúng tại vị trí chuột'],[K('X'),'Dán dấu ✗ sai tại vị trí chuột'],[K('B'),'Dán con dấu 棒 tại vị trí chuột'],[K('I'),'Đánh dấu bài – nhảy nhanh tới đầu mỗi bài; bấm ♪ để gắn audio cho bài'],[K('Q'),'Phát / dừng audio của bài đang dạy'],[K('⇧','Q'),'Bài nghe tiếp theo'],[K(',')+' '+K('.'),'Lùi / tới 5 giây'],[K('Tab'),'Hiện / ẩn thanh công cụ (mặc định ẩn)'],[K('A'),'Tự ẩn thanh công cụ'],[K(CMD,'S'),'Lưu trang (kèm ghi chú) thành ảnh']
+    [K('⇧','Delete'),'Xoá hết ghi chú trang này'],[K('N'),'Ẩn / hiện ghi chú'],[K('U'),'Tấm che đáp án: kéo để che; bấm vào tấm che để lật mở / che lại'],[K('⇧','U'),'Mở / che tất cả tấm che trên trang'],[K('S'),'Đèn rọi: kéo khung vùng cần chú ý; S hoặc Esc để tắt'],[K('G'),'Mặc định nét viết TỰ XOÁ khi lật trang; bấm G để GIỮ LẠI vào sách'],[K('D'),'Dán dấu ✓ đúng tại vị trí chuột'],[K('X'),'Dán dấu ✗ sai tại vị trí chuột'],[K('B'),'Dán con dấu 棒 tại vị trí chuột'],[K('I'),'Đánh dấu bài – nhảy nhanh tới đầu mỗi bài; bấm ♪ để gắn audio cho bài'],[K('Q'),'Phát / dừng audio của bài đang dạy'],[K('⇧','Q'),'Bài nghe tiếp theo'],[K(',')+' '+K('.'),'Lùi / tới 5 giây'],[K('Tab'),'Hiện / ẩn thanh công cụ (mặc định ẩn)'],[K('A'),'Tự ẩn thanh công cụ'],[K(CMD,'S'),'Lưu trang (kèm ghi chú) thành ảnh'],[K(CMD,'P'),'Lưu nhiều trang thành 1 file PDF']
   ];
   const nav=[[K('←')+' '+K('→'),'Lật trang'],[K('PageUp')+' '+K('PageDown'),'Lật trang'],[K('Home')+' '+K('End'),'Trang đầu / cuối'],[K('J'),'Nhảy tới số trang'],
     [K('0'),'Xem vừa cả trang'],[K('W'),'Xem vừa chiều ngang'],[K('=')+' '+K('-'),'Phóng to / thu nhỏ'],[K('Z'),'Khoanh vùng để phóng to (bài tập, hội thoại…)'],
@@ -1258,9 +1269,9 @@ function showHelp(on){
   $('#hp').innerHTML=`<h2>Thư viện sách Guangyu Hanyu – phím tắt</h2><div style="font-size:13px;color:#8a8172">Ghi chú tự lưu theo từng trang của từng cuốn sách. Sách chỉ đọc trên máy Thầy, không tải lên mạng.</div>
   <h3>Xem sách</h3>${g(nav)}<h3>Công cụ ghi chú</h3>${g(rows)}<h3>Bộ gõ Hán tự (T)</h3>${g(ime)}
   <h3>Lưu trữ</h3><p style="margin:0 0 6px">Ghi chú lưu trong Safari. Nên <b>Xuất sao lưu</b> định kỳ (Safari có thể xoá dữ liệu của trang không mở trong 7 ngày).</p>
-  <div class="row"><button class="btn" id="bexp">⤓ Xuất sao lưu ghi chú</button><button class="btn" id="bimp">⤒ Nhập sao lưu</button><button class="btn" id="bpng">🖼 Lưu trang thành ảnh</button><button class="btn" id="bdel">🗑 Xoá ghi chú trang này</button><button class="btn" id="bfs">⛶ Toàn màn hình (F)</button></div>
+  <div class="row"><button class="btn" id="bexp">⤓ Xuất sao lưu ghi chú</button><button class="btn" id="bimp">⤒ Nhập sao lưu</button><button class="btn" id="bpdf">📄 Lưu nhiều trang thành PDF</button><button class="btn" id="bpng">🖼 Lưu trang thành ảnh</button><button class="btn" id="bdel">🗑 Xoá ghi chú trang này</button><button class="btn" id="bfs">⛶ Toàn màn hình (F)</button></div>
   <div class="row" style="justify-content:flex-end;margin-top:14px"><button class="btn red" id="bclose">Đóng</button></div>`;
-  $('#bexp').onclick=exportJSON;$('#bimp').onclick=()=>$('#fimp').click();$('#bpng').onclick=()=>{showHelp(false);setTimeout(exportPNG,50);};$('#bdel').onclick=()=>{showHelp(false);clearPageNotes();};
+  $('#bexp').onclick=exportJSON;$('#bimp').onclick=()=>$('#fimp').click();$('#bpdf').onclick=()=>{showHelp(false);openPdfDialog();};$('#bpng').onclick=()=>{showHelp(false);setTimeout(exportPNG,50);};$('#bdel').onclick=()=>{showHelp(false);clearPageNotes();};
   $('#bfs').onclick=()=>{showHelp(false);toggleFS();};$('#bclose').onclick=()=>showHelp(false);$('#help').classList.add('show');
 }
 $('#help').addEventListener('pointerdown',e=>{if(e.target.id==='help')showHelp(false);});
@@ -1279,6 +1290,7 @@ addEventListener('keydown',e=>{
     if(c==='KeyZ'){e.preventDefault();e.shiftKey?redo():undo();}
     else if(c==='KeyY'){e.preventDefault();redo();}
     else if(c==='KeyS'){e.preventDefault();exportPNG();}
+    else if(c==='KeyP'){e.preventDefault();openPdfDialog();}
     else if(c==='KeyA'){e.preventDefault();setTool('sel');page().objs.forEach(o=>sel.add(o.id));render();}
     else if(c==='KeyO'){e.preventDefault();showLib();}
     return;
@@ -1346,6 +1358,64 @@ $('#bdir').onclick=()=>$('#fdir').click();$('#bfile').onclick=()=>$('#fpdf').cli
 $('#fdir').onchange=e=>{addFiles(e.target.files,true);e.target.value='';renderLib();if(!FILES.length)toast('Không thấy file PDF nào trong thư mục này');};
 $('#fpdf').onchange=e=>{const fs=[...e.target.files];addFiles(fs,false);e.target.value='';if(fs.length===1)openBook(FILES.find(f=>f.id===fid(fs[0])));else renderLib();};
 $('#lsearch').addEventListener('input',()=>renderLib());
+/* ---------- lưu nhiều trang thành PDF ---------- */
+function lessonRange(){const L=curLesson();if(!L)return null;const nx=marksList().filter(m=>m.p>L.p).sort((a,b)=>a.p-b.p)[0];return {name:L.name,a:L.p,b:nx?nx.p-1:BK.n};}
+function parseRange(s){const out=new Set();String(s).split(/[,;\s]+/).forEach(part=>{const m=part.match(/^(\d+)\s*[-–]\s*(\d+)$/);if(m){let a=+m[1],b=+m[2];if(a>b)[a,b]=[b,a];for(let i=a;i<=b;i++)out.add(i);}else if(/^\d+$/.test(part))out.add(+part);});return [...out].filter(n=>n>=1&&n<=BK.n).sort((a,b)=>a-b);}
+function openPdfDialog(){if(!BK)return;if(editing)commitEdit();
+  const L=lessonRange(),noted=realPages().map(Number).sort((a,b)=>a-b);
+  $('#pdfbox').innerHTML=`<h3>📄 Lưu thành file PDF</h3>
+  <p>${esc(BK.title)} · ${BK.n} trang</p>
+  <label class="pr"><input type="radio" name="prg" value="cur" checked> Trang đang xem (trang ${P})</label>
+  ${L?`<label class="pr"><input type="radio" name="prg" value="les"> Cả bài “${esc(L.name)}” (trang ${L.a}–${L.b})</label>`:''}
+  ${noted.length?`<label class="pr"><input type="radio" name="prg" value="noted"> Các trang có ghi chú (${noted.length} trang)</label>`:''}
+  <label class="pr"><input type="radio" name="prg" value="custom"> Chọn trang: <input id="prange" placeholder="vd. 12-15, 20" inputmode="numeric"></label>
+  <div class="popt"><label><input type="checkbox" id="pnotes" checked> Kèm ghi chú, highlight, ký hiệu</label><label><input type="checkbox" id="pmasks"> Giữ tấm che (che đáp án)</label></div>
+  <div class="row"><button class="btn" id="pdfcancel">Huỷ</button><button class="btn red" id="pdfgo">Tạo PDF</button></div>`;
+  $('#pdfmodal').classList.add('show');
+  $('#prange').addEventListener('focus',()=>{$('#pdfbox input[value="custom"]').checked=true;});
+  $('#pdfcancel').onclick=()=>$('#pdfmodal').classList.remove('show');
+  $('#pdfgo').onclick=()=>{const v=($('#pdfbox input[name="prg"]:checked')||{}).value;let pages=[];
+    if(v==='cur')pages=[P];else if(v==='les')pages=Array.from({length:L.b-L.a+1},(_,i)=>L.a+i);else if(v==='noted')pages=noted;else pages=parseRange($('#prange').value);
+    if(!pages.length){toast('Thầy nhập số trang cần lưu, ví dụ 12-15');return;}
+    if(pages.length>120&&!confirm(`Lưu ${pages.length} trang sẽ khá lâu và file nặng. Tiếp tục?`))return;
+    $('#pdfmodal').classList.remove('show');
+    const label=v==='les'?L.name:(pages.length===1?`trang ${pages[0]}`:`trang ${pages[0]}-${pages[pages.length-1]}`);
+    buildPdf(pages,$('#pnotes').checked,$('#pmasks').checked,label);};}
+$('#pdfmodal').addEventListener('pointerdown',e=>{if(e.target.id==='pdfmodal')$('#pdfmodal').classList.remove('show');});
+$('#pdfmodal').addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Escape')$('#pdfmodal').classList.remove('show');if(e.key==='Enter'&&e.target.id==='prange')$('#pdfgo').click();});
+async function buildPdf(pages,withNotes,withMasks,label){
+  const bk=BK,PH0=PH,out=[];
+  try{
+    for(let i=0;i<pages.length;i++){const n=pages[i];showLoading(`Đang tạo PDF… trang ${n} (${i+1}/${pages.length})`);
+      const pg=await bk.pdf.getPage(n);const v1=pg.getViewport({scale:1});const wpx=Math.round(Math.min(1700,v1.width*2.2));const vp=pg.getViewport({scale:wpx/v1.width});
+      const c=document.createElement('canvas');c.width=Math.round(vp.width);c.height=Math.round(vp.height);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
+      await pg.render({canvasContext:x,viewport:vp}).promise;
+      const k=c.width/1000;x.setTransform(k,0,0,k,0,0);PH=1000*v1.height/v1.width;
+      const objs=(NOTES&&NOTES.pages[n])||[];
+      if(withNotes){if(withMasks)drawMasks(x,objs.map(o=>o.t==='m'?Object.assign({},o,{open:false}):o));drawAll(x,objs);}
+      drawWM(x);PH=PH0;
+      const blob=await new Promise(r=>c.toBlob(r,'image/jpeg',.86));const bytes=new Uint8Array(await blob.arrayBuffer());
+      out.push({w:v1.width,h:v1.height,iw:c.width,ih:c.height,img:bytes});
+      await new Promise(r=>setTimeout(r,0));}
+    const pdf=makePDF(out);dl(pdf,`${safeName(bk.title)} - ${safeName(label)}.pdf`);
+    toast(`Đã lưu PDF ${out.length} trang`);
+  }catch(e){console.error(e);alert('Không tạo được PDF: '+(e&&e.message||e));}
+  PH=PH0;hideLoading();}
+function makePDF(pages){
+  const enc=new TextEncoder(),parts=[],offs=[];let len=0;
+  const push=s=>{const b=typeof s==='string'?enc.encode(s):s;parts.push(b);len+=b.length;};
+  const N=pages.length,total=3+3*N;
+  push('%PDF-1.4\n%âãÏÓ\n');
+  offs[1]=len;push('1 0 obj\n<</Type/Catalog/Pages 2 0 R>>\nendobj\n');
+  offs[2]=len;push(`2 0 obj\n<</Type/Pages/Kids[${pages.map((p,i)=>`${3+3*i} 0 R`).join(' ')}]/Count ${N}>>\nendobj\n`);
+  pages.forEach((p,i)=>{const po=3+3*i,co=po+1,io=po+2,w=p.w.toFixed(2),h=p.h.toFixed(2);
+    offs[po]=len;push(`${po} 0 obj\n<</Type/Page/Parent 2 0 R/MediaBox[0 0 ${w} ${h}]/Resources<</XObject<</Im0 ${io} 0 R>>>>/Contents ${co} 0 R>>\nendobj\n`);
+    const cs=`q ${w} 0 0 ${h} 0 0 cm /Im0 Do Q`;offs[co]=len;push(`${co} 0 obj\n<</Length ${cs.length}>>\nstream\n${cs}\nendstream\nendobj\n`);
+    offs[io]=len;push(`${io} 0 obj\n<</Type/XObject/Subtype/Image/Width ${p.iw}/Height ${p.ih}/ColorSpace/DeviceRGB/BitsPerComponent 8/Filter/DCTDecode/Length ${p.img.length}>>\nstream\n`);push(p.img);push('\nendstream\nendobj\n');});
+  const xo=len;let x=`xref\n0 ${total}\n0000000000 65535 f \n`;for(let i=1;i<total;i++)x+=String(offs[i]).padStart(10,'0')+' 00000 n \n';
+  push(x+`trailer\n<</Size ${total}/Root 1 0 R>>\nstartxref\n${xo}\n%%EOF\n`);
+  return new Blob(parts,{type:'application/pdf'});}
+
 function applyTheme(){document.body.classList.toggle('dark',S.theme==='dark');}
 function toggleTheme(){S.theme=S.theme==='dark'?'light':'dark';applyTheme();toast(S.theme==='dark'?'Nền tối':'Nền sáng');save();}
 function lsGet(k){try{return +localStorage.getItem(k)||0;}catch(e){return 0;}}
